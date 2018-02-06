@@ -25,13 +25,9 @@ sigma = zeros(1, size(X, 2));
 %
 % Hint: You might find the 'mean' and 'std' functions useful.
 %       
-
-
-
-
-
-
-
+mu = mean(X);  % mean for each X column
+sigma = std(X); % standard deviation for each X column;
+X_norm = (X - mu) ./ sigma;  % perform normalization for each and store in X_norm
 
 
 % ============================================================
