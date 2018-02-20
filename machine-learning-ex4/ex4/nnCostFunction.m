@@ -75,24 +75,49 @@ firstErrTerm = zeros(size(a3));
 secErrTerm = zeros(size(a3));
 sumErr = zeros(size(y));
 
-J_temp = 0;
+% Calculating Cost Function
 for c=1:num_labels,
   firstErrTerm = (y==c) .*  log(a3(:,c));
   secErrTerm = (1-(y==c)) .* log(1 - a3(:,c));  
   sumErr = sumErr + firstErrTerm + secErrTerm;
 end;
 
+Theta1_reg = Theta1(:,2:end);
+Theta2_reg = Theta2(:,2:end);
+
+regTerm = sum(sum(Theta1_reg,2));
+regTerm = regTerm + sum(sum(Theta2_reg,2));
+regTerm = (lambda / (2*m)) * regTerm;
+
 J = (-1/m) * sum(sumErr);    % Cost
+J = J + regTerm;
 
 % BackPropogation
+errorNode_hidden_layer = zeros(1, hidden_layer_size+1);  % compensating for theta_0 1x26 matrix
+errorNode_output_layer = zeros(1, num_labels);           % 1x10 matrix
 
+y_matrix = zeros(m, num_labels);
+for c=1:num_labels,
+  y_matrix(:, c) = y_matrix(:, c) + (y==c);  
+end
 
+g_prime_2 = a2 .* (1-a2);
+delta1 = 0;
+delta2 = 0;
 
+for i=1:m,
+  errorNode_output_layer = a3(i,:) - y_matrix(i,:);   % 1 x 10 matrix. 10 for each yi
+  errorNode_hidden_layer = (errorNode_output_layer * Theta2) .* g_prime_2(i,:);     % 1 x 26 matrix for error for each error.
+  
+  delta1 = delta1 + (a2(i,:) * transpose(errorNode_hidden_layer));  
+  delta2 = delta2 + (a3(i,:) * transpose(errorNode_output_layer)); 
+end;
 
+Theta1_grad = Theta1_grad + (1/m)*(delta1);
+Theta1_grad(:,2:end) = Theta1_grad(:,2:end) + lambda * (Theta1(:,2:end)) ;
 
-
-
-
+Theta2_grad = Theta2_grad + (1/m)*(delta1);
+Theta2_grad(:,2:end) = Theta2_grad(:,2:end) + lambda * (Theta2(:,2:end)) ;
 
 % -------------------------------------------------------------
 
