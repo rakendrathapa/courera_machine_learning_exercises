@@ -62,15 +62,29 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+a1 = [ones(size(X,1),1) X];    % First Input Layer
 
+z2 = a1 * transpose(Theta1); % Calculating z2
+a2 = sigmoid(z2);    % Calculating a2
+a2 = [ones(size(a2,1), 1) a2];   % Add a0
 
+z3 = a2 * transpose(Theta2);
+a3 = sigmoid(z3);             % H(Theta) - output. No need to add 1 here. Size should be 10. 
 
+firstErrTerm = zeros(size(a3));
+secErrTerm = zeros(size(a3));
+sumErr = zeros(size(y));
 
+J_temp = 0;
+for c=1:num_labels,
+  firstErrTerm = (y==c) .*  log(a3(:,c));
+  secErrTerm = (1-(y==c)) .* log(1 - a3(:,c));  
+  sumErr = sumErr + firstErrTerm + secErrTerm;
+end;
 
+J = (-1/m) * sum(sumErr);    % Cost
 
-
-
-
+% BackPropogation
 
 
 
